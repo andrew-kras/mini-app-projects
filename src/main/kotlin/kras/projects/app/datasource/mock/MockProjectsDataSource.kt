@@ -7,28 +7,34 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class MockProjectsDataSource : ProjectsDataSource {
-    val projects = mutableListOf(
-        Project(
-            1,
-            "Managers",
-            "First project",
-            mutableListOf(
-                Member(1, "Muu Iban", "Project Manager"),
-                Member(2, "Jack Warrior", "Project Manager"),
-                Member(3, "Bruce Lee ", "Team Manager")
-            )
-        ),
-        Project(
-            2,
-            "Developers",
-            "Second project",
-            mutableListOf(
-                Member(4, "JSON Statham", "Software Engineer"),
-                Member(5, "Emily Emily", "QA Engineer"),
-                Member(6, "Like Human", "Frontend Developer")
+    private val projects = mutableListOf<Project>()
+
+    init {
+        projects.add(
+            ProjectImpl(
+                1,
+                "Managers",
+                "First project",
+                mutableListOf(
+                    MemberImpl(1, "Muu Iban", "Project Manager"),
+                    MemberImpl(2, "Jack Warrior", "Project Manager"),
+                    MemberImpl(3, "Bruce Lee ", "Team Manager")
+                )
             )
         )
-    )
+        projects.add(
+            ProjectImpl(
+                2,
+                "Developers",
+                "Second project",
+                mutableListOf(
+                    MemberImpl(4, "JSON Statham", "Software Engineer"),
+                    MemberImpl(5, "Emily Emily", "QA Engineer"),
+                    MemberImpl(6, "Like Human", "Frontend Developer")
+                )
+            )
+        )
+    }
 
     override fun retrieveProjects(): Collection<Project> = projects
 
@@ -114,3 +120,29 @@ class MockProjectsDataSource : ProjectsDataSource {
         (project?.members as MutableList<Member>).remove(member)
     }
 }
+
+//private interface Project {
+//    val projectId: Int
+//    val projectName: String
+//    val projectDescription: String
+//    val members: List<Member>
+//}
+
+private class ProjectImpl(
+    override val projectId: Int,
+    override val projectName: String,
+    override val projectDescription: String,
+    override val members: List<Member>
+) : Project
+
+//private interface Member {
+//    val id: Int
+//    val name: String
+//    val description: String
+//}
+
+private class MemberImpl(
+    override val id: Int,
+    override val name: String,
+    override val description: String
+) : Member
