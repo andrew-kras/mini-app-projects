@@ -2,71 +2,41 @@ package kras.projects.app.controller
 
 import kras.projects.app.model.Member
 import kras.projects.app.model.Project
-import kras.projects.app.service.ProjectsService
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import kras.projects.app.service.MemberService
+import kras.projects.app.service.ProjectService
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/projects")
-class ProjectsController(private val service: ProjectsService) {
+@RequestMapping("/projects")
+class ProjectController(@Autowired val projectService: ProjectService) {
 
-    @ExceptionHandler(NoSuchElementException::class)
-    fun handlerNotFound(e: NoSuchElementException): ResponseEntity<String> {
-        return ResponseEntity(e.message, HttpStatus.NOT_FOUND)
-    }
-
-    @ExceptionHandler(IllegalArgumentException::class)
-    fun handlerBadRequest(e: IllegalArgumentException): ResponseEntity<String> {
-        return ResponseEntity(e.message, HttpStatus.BAD_REQUEST)
-    }
-
-    @GetMapping()
-    fun getProjects(): Collection<Project> = service.getProjects()
+    @GetMapping
+    fun getAllProjects(): List<Project> = projectService.findAll()
 
     @GetMapping("/{id}")
-    fun getProject(@PathVariable id: Int) = service.getProject(id)
+    fun getProjectById(@PathVariable id: Int): Project? = projectService.findById(id)
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    fun addProject(@RequestBody project: Project): Project = service.addProject(project)
-
-    @PatchMapping
-    fun updateProject(@RequestBody project: Project): Project = service.updateProject(project)
+    fun createProject(@RequestBody project: Project): Project = projectService.save(project)
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun deleteProject(@PathVariable id: Int): Unit = service.deleteProjects(id)
+    fun deleteProject(@PathVariable id: Int) = projectService.deleteById(id)
 }
 
 @RestController
-@RequestMapping("/api/members")
-class MembersController(private val service: ProjectsService) {
-    @ExceptionHandler(NoSuchElementException::class)
-    fun handlerNotFound(e: NoSuchElementException): ResponseEntity<String> {
-        return ResponseEntity(e.message, HttpStatus.NOT_FOUND)
-    }
+@RequestMapping("/members")
+class MemberController(@Autowired val memberService: MemberService) {
 
-    @ExceptionHandler(IllegalArgumentException::class)
-    fun handlerBadRequest(e: IllegalArgumentException): ResponseEntity<String> {
-        return ResponseEntity(e.message, HttpStatus.BAD_REQUEST)
-    }
-
-    @GetMapping()
-    fun getMembers(): Collection<Member> = service.getMembers()
+    @GetMapping
+    fun getAllMembers(): List<Member> = memberService.findAll()
 
     @GetMapping("/{id}")
-    fun getMembers(@PathVariable id: Int) = service.getMembers(id)
+    fun getMemberById(@PathVariable id: Int): Member? = memberService.findById(id)
 
-    @PostMapping("/project/{projectId}")
-    @ResponseStatus(HttpStatus.CREATED)
-    fun addMember(@RequestBody member: Member, @PathVariable projectId: Int): Member = service.addMember(projectId, member)
-
-    @PatchMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    fun updateMember(@RequestBody member: Member): Member = service.updateMember(member)
+    @PostMapping
+    fun createMember(@RequestBody member: Member): Member = memberService.save(member)
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun deleteMember(@PathVariable id: Int): Unit = service.deleteMember(id)
+    fun deleteMember(@PathVariable id: Int) = memberService.deleteById(id)
 }
